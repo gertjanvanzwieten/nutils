@@ -51,12 +51,11 @@ class Topology(types.Singleton):
 
   @types.apply_annotations
   def __init__(self, references:types.strict[References], transforms:transformseq.stricttransforms, opposites:transformseq.stricttransforms):
-    assert references.ndims == opposites.fromdims == transforms.fromdims
     assert len(references) == len(transforms) == len(opposites)
     self.references = references
     self.transforms = transforms
     self.opposites = opposites
-    self.ndims = transforms.fromdims
+    self.ndims = references.ndims
     super().__init__()
 
   def __str__(self):
@@ -1313,11 +1312,12 @@ class SimplexTopology(Topology):
 
   @types.apply_annotations
   def __init__(self, simplices:_renumber, transforms:transformseq.stricttransforms, opposites:transformseq.stricttransforms):
-    assert simplices.shape == (len(transforms), transforms.fromdims+1)
+    assert simplices.ndim == 2
+    assert simplices.shape[0] == len(transforms)
     assert numpy.greater(simplices[:,1:], simplices[:,:-1]).all(), 'nodes should be sorted'
     assert not numpy.equal(simplices[:,1:], simplices[:,:-1]).all(), 'duplicate nodes'
     self.simplices = simplices
-    references = References.uniform(element.getsimplex(transforms.fromdims), len(transforms))
+    references = References.uniform(element.getsimplex(simplices.shape[1]-1), len(transforms))
     super().__init__(references, transforms, opposites)
 
   @property
