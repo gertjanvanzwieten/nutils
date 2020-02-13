@@ -580,7 +580,7 @@ class _RootCoords(Array):
   def prepare_eval(self, *, ndims: int, npoints: Optional[Union[int, evaluable.Array]] = evaluable.NPoints(), opposite: bool = False, **kwargs) -> evaluable.Array:
     assert npoints is not None
     trans = evaluable.SelectChain(int(opposite))
-    trans = evaluable.PopHead(self.shape[0], trans)
+    trans = evaluable.TransformChainWithTodims(self.shape[0], trans)
     points = evaluable.Points(npoints, ndims)
     return evaluable.ApplyTransforms(trans, points)
 

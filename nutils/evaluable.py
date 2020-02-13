@@ -478,7 +478,7 @@ class SelectChain(TransformChain):
   def _asciitree_str(self):
     return 'SelectChain({})'.format(self.n)
 
-class PopHead(TransformChain):
+class TransformChainWithTodims(TransformChain):
 
   __slots__ = 'trans',
 
@@ -488,8 +488,8 @@ class PopHead(TransformChain):
     super().__init__(args=[self.trans], todims=todims)
 
   def evalf(self, trans):
-    assert trans[0].fromdims == self.todims
-    return trans[1:]
+    assert trans[0].todims == self.todims
+    return trans
 
 class SelectBifurcation(TransformChain):
 

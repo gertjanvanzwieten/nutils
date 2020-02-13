@@ -11,7 +11,7 @@ class check(TestCase):
     super().setUp()
     domain = mesh.rectilinear([1]*self.ndim, periodic=[0])[0]
     self.sample = domain.sample('uniform', 2)
-    param = rootcoords = evaluable.ApplyTransforms(evaluable.PopHead(self.ndim, evaluable.SelectChain(0)), evaluable.Points(self.sample.npoints, self.sample.ndims))
+    param = rootcoords = evaluable.ApplyTransforms(evaluable.TransformChainWithTodims(self.ndim, evaluable.SelectChain(0)), evaluable.Points(self.sample.npoints, self.sample.ndims))
     if self.ndim == 1:
       self.geom = param**2
       poly = numpy.array([[1,-2,1],[0,2,-2],[0,0,1]]) # 2nd order bernstein
