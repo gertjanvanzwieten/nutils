@@ -2186,10 +2186,12 @@ class MultipatchTopology(Topology):
   def basis_patch(self):
     'degree zero patchwise discontinuous basis'
 
-    transforms = transformseq.PlainTransforms(tuple((patch.topo.root,) for patch in self.patches), self.ndims)
-    index = function.transforms_index(transforms)
-    coords = function.transforms_coords(transforms, self.ndims)
-    return function.DiscontBasis([types.frozenarray(1, dtype=int).reshape(1, *(1,)*self.ndims)]*len(self.patches), index, coords)
+    coeffs = (types.frozenarray(numpy.ones((1,)*(self.ndims+1), dtype=int)),)*len(self)
+    dofs = ()
+    for ipatch, patch in enumerate(self.patches):
+      dofs += (types.frozenarray([ipatch]),)*len(patch.topo)
+    index, coords = self._index_coords
+    return function.PlainBasis(coeffs, dofs, len(self.patches), index, coords)
 
   @property
   def boundary(self):

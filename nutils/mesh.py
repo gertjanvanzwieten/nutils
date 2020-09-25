@@ -279,6 +279,8 @@ def multipatch(patches, nelems, patchverts=None, name='multipatch'):
 
   topos = []
   coords = []
+  offset = 0
+  root = transform.Identifier(ndims, name)
   for i, patch in enumerate(patches):
     # find shape of patch and local patch coordinates
     shape = []
@@ -296,7 +298,9 @@ def multipatch(patches, nelems, patchverts=None, name='multipatch'):
         raise ValueError('duplicate number of elements specified for patch {} in dimension {}'.format(i, dim))
       shape.append(nelems_sides[0])
     # create patch topology
-    topos.append(rectilinear(shape, name='{}{}'.format(name, i))[0])
+    axes = (transformseq.DimAxis(offset, offset + shape[0], False), *(transformseq.DimAxis(0, n, False) for n in shape[1:]))
+    offset += shape[0]
+    topos.append(topology.StructuredTopology(root, axes))
     # compute patch geometry
     patchcoords = [numpy.linspace(0, 1, n+1) for n in shape]
     patchcoords = numeric.meshgrid(*patchcoords).reshape(ndims, -1)
