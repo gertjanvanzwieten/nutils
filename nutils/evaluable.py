@@ -757,10 +757,19 @@ if __debug__:
       return chunks
     return _assparse
 
+  def _evalf_checker(orig):
+    f = orig.__func__ if isinstance(orig, staticmethod) else orig
+    @functools.wraps(orig)
+    def evalf(*args, **kwargs):
+      return f(*args, **kwargs)
+    return evalf if inspect.isfunction(orig) else staticmethod(evalf)
+
   class _ArrayMeta(type(Evaluable)):
     def __new__(mcls, name, bases, namespace):
       if '_assparse' in namespace:
         namespace['_assparse'] = _chunked_assparse_checker(namespace['_assparse'])
+      if 'evalf' in namespace:
+        namespace['evalf'] = _evalf_checker(namespace['evalf'])
       return super().__new__(mcls, name, bases, namespace)
 
 else:
